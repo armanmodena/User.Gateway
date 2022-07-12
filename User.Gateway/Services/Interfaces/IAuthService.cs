@@ -1,13 +1,13 @@
 ﻿using System.Threading.Tasks;
+using User.Gateway.DTO;
 using User.Gateway.DTO.Auth;
-using User.Gateway.DTO.Error;
 
 namespace User.Gateway.Services.Interfaces
 {
     public interface IAuthService
     {
-        Task<(AuthResultDto, Error)> Login(AuthLoginDto authLogin);
+        Task<(AuthResultDto, ErrorDto)> Login(AuthLoginDto authLogin);
 
-        Task<(AuthResultDto, Error)> GetRefreshToken(string accessToken, string refreshToken);
+        Task<(AuthResultDto, ErrorDto)> GetRefreshToken(string accessToken, string refreshToken);
     }
 }

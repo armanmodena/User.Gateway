@@ -10,7 +10,6 @@ using Microsoft.IdentityModel.Tokens;
 using StackExchange.Redis;
 using User.Gateway.DTO;
 using User.Gateway.DTO.Auth;
-using User.Gateway.DTO.Error;
 using User.Gateway.DTO.User;
 using User.Gateway.Services.Interfaces;
 using User.Gateway.Utils;
@@ -42,7 +41,7 @@ namespace User.Gateway.Services
             Redis = ConnectionMultiplexer.ConnectAsync(Configs["ConnectionStrings:Redis"]).Result;
         }
 
-        public async Task<(AuthResultDto, Error)> Login(AuthLoginDto authLogin)
+        public async Task<(AuthResultDto, ErrorDto)> Login(AuthLoginDto authLogin)
         {
             var (user, userError) = await UserService.GetByUsername(authLogin.Username);
 
@@ -98,7 +97,7 @@ namespace User.Gateway.Services
             return userToken;
         }
 
-        private async Task<(string, Error)> GenerateAccessToken(UserDto user, UserTokenDto userToken)
+        private async Task<(string, ErrorDto)> GenerateAccessToken(UserDto user, UserTokenDto userToken)
         {
             var claims = new[]
             {
@@ -138,7 +137,7 @@ namespace User.Gateway.Services
             return (accessToken, null);
         }
 
-        public async Task<(AuthResultDto, Error)> GetRefreshToken(string accessToken, string refreshToken)
+        public async Task<(AuthResultDto, ErrorDto)> GetRefreshToken(string accessToken, string refreshToken)
         {
             var userId = HttpContextAccessor.HttpContext.Items[ClaimUtil.USER_ID].ToString();
 

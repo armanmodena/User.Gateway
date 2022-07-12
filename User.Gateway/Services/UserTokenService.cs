@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Flurl.Http;
 using User.Gateway.DTO;
-using User.Gateway.DTO.Error;
 using User.Gateway.DTO.User;
 using User.Gateway.Services.Interfaces;
 
@@ -17,30 +16,30 @@ namespace User.Gateway.Services
             FLService = flService;
         }
 
-        public async Task<(UserTokenDto, Error)> GetByUserId(int user_id)
+        public async Task<(UserTokenDto, ErrorDto)> GetByUserId(int user_id)
         {
-            var result = await FLService.Request($"user/{user_id}/token").GetAsync().ReceiveJson<ResponseDataDto<UserTokenDto>>();
-            return result.Status == 200 ? (result.Data, null) : (null, new Error()
+            var result = await FLService.Request($"user/{user_id}/token").GetAsync().ReceiveJson<FLResponseDto<UserTokenDto>>();
+            return result.Status == 200 ? (result.Data, null) : (null, new ErrorDto()
             {
                 Status = result.Status,
                 Message = result.Message
             });
         }
 
-        public async Task<(UserTokenDto, Error)> GetToken(int user_id, string refreshToken)
+        public async Task<(UserTokenDto, ErrorDto)> GetToken(int user_id, string refreshToken)
         {
-            var result = await FLService.Request($"user/{user_id}/token/{refreshToken}").GetAsync().ReceiveJson<ResponseDataDto<UserTokenDto>>();
-            return result.Status == 200 ? (result.Data, null) : (null, new Error()
+            var result = await FLService.Request($"user/{user_id}/token/{refreshToken}").GetAsync().ReceiveJson<FLResponseDto<UserTokenDto>>();
+            return result.Status == 200 ? (result.Data, null) : (null, new ErrorDto()
             {
                 Status = result.Status,
                 Message = result.Message
             });
         }
 
-        public async Task<(UserTokenDto, Error)> Insert(UserTokenDto userToken)
+        public async Task<(UserTokenDto, ErrorDto)> Insert(UserTokenDto userToken)
         {
-            var result = await FLService.Request("user/token").PostJsonAsync(userToken).ReceiveJson<ResponseDataDto<UserTokenDto>>();
-            return result.Status == 201 ? (result.Data, null) : (null, new Error()
+            var result = await FLService.Request("user/token").PostJsonAsync(userToken).ReceiveJson<FLResponseDto<UserTokenDto>>();
+            return result.Status == 201 ? (result.Data, null) : (null, new ErrorDto()
             {
                 Status = result.Status,
                 Message = result.Message

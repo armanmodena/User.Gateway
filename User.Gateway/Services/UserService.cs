@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Flurl.Http;
 using User.Gateway.DTO;
-using User.Gateway.DTO.Error;
 using User.Gateway.DTO.User;
 using User.Gateway.Services.Interfaces;
 
@@ -16,45 +15,82 @@ namespace User.Gateway.Services
             FLService = flService;
         }
 
-        public async Task<(PageResult<UserDto>, Error)> GetAll(string select, string search, string filterAnd, string filterOr, string filterOut, 
+        public async Task<(PageResultDto<UserDto>, ErrorDto)> GetAll(string select, string search, string filterAnd, string filterOr, string filterOut,
             string orderBy, string direction, int page, int pageSize)
         {
             var result = await FLService.Request("user").SetQueryParams(new
             {
-                select = select != null ? select : "",
-                search = search != null ? search : "",
-                filterAnd = filterAnd != null ? filterAnd : "",
-                filterOr = filterOr != null ? filterOr : "",
-                filterOut = filterOut != null ? filterOut : "",
-                orderBy = orderBy != null ? orderBy : "",
-                direction = direction != null ? direction : "",
-                page = page != null ? page : 1,
-                pageSize = pageSize != null ? pageSize : 10,
-            }).GetAsync().ReceiveJson<ResponseDataDto<PageResult<UserDto>>>();
-            return result.Status == 200 ? (result.Data, null) : (null, new Error()
+                select = select,
+                search = search,
+                filterAnd = filterAnd,
+                filterOr = filterOr,
+                filterOut = filterOut,
+                orderBy = orderBy,
+                direction = direction,
+                page = page,
+                pageSize = pageSize,
+            }).GetAsync().ReceiveJson<FLResponseDto<PageResultDto<UserDto>>>();
+            return result.Status == 200 ? (result.Data, null) : (null, new ErrorDto()
             {
                 Status = result.Status,
                 Message = result.Message
             });
         }
 
-        public async Task<(UserDto, Error)> Get(int id)
+        public async Task<(UserDto, ErrorDto)> Get(int id)
         {
-            var result = await FLService.Request($"user/{id}").GetAsync().ReceiveJson<ResponseDataDto<UserDto>>();
-            return result.Status == 200 ? (result.Data, null) : (null, new Error()
+            var result = await FLService.Request($"user/{id}").GetAsync().ReceiveJson<FLResponseDto<UserDto>>();
+            return result.Status == 200 ? (result.Data, null) : (null, new ErrorDto()
             {
                 Status = result.Status,
                 Message = result.Message
             });
         }
 
-        public async Task<(UserDto, Error)> GetByUsername(string username)
+        public async Task<(UserDto, ErrorDto)> GetByUsername(string username)
         {
-            var result = await FLService.Request($"user/{username}/username").GetAsync().ReceiveJson<ResponseDataDto<UserDto>>();
-            return result.Status == 200 ? (result.Data, null) : (null, new Error() { 
-                Status = result.Status, 
-                Message = result.Message 
+            var result = await FLService.Request($"user/{username}/username").GetAsync().ReceiveJson<FLResponseDto<UserDto>>();
+            return result.Status == 200 ? (result.Data, null) : (null, new ErrorDto()
+            {
+                Status = result.Status,
+                Message = result.Message
             });
+        }
+
+        public async Task<ResponseDataDto> Insert(FormUserDto user)
+        {
+            var result = await FLService.Request("user").PostJsonAsync(user).ReceiveJson<FLResponseDto<UserDto>>();
+            return new ResponseDataDto()
+            {
+                Status = result.Status,
+                Message = result.Message,
+                Data = result.Data,
+                Errors = result.Errors != null ? FLService.FormErrors(result.Errors) : null
+            };
+        }
+
+        public async Task<ResponseDataDto> Update(int id, FormUserDto user)
+        {
+            var result = await FLService.Request($"user/{id}").PutJsonAsync(user).ReceiveJson<FLResponseDto<UserDto>>();
+            return new ResponseDataDto()
+            {
+                Status = result.Status,
+                Message = result.Message,
+                Data = result.Data,
+                Errors = result.Errors != null ? FLService.FormErrors(result.Errors) : null
+            };
+        }
+
+        public async Task<ResponseDataDto> Delete(int id)
+        {
+            var result = await FLService.Request($"user/{id}").DeleteAsync().ReceiveJson<FLResponseDto<UserDto>>();
+            return new ResponseDataDto()
+            {
+                Status = result.Status,
+                Message = result.Message,
+                Data = result.Data,
+                Errors = result.Errors != null ? FLService.FormErrors(result.Errors) : null
+            };
         }
     }
 }

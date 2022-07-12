@@ -1,6 +1,6 @@
 ﻿using System;
 using Microsoft.AspNetCore.Mvc;
-using User.Gateway.DTO.Error;
+using User.Gateway.DTO;
 
 namespace User.Gateway.Controllers
 {
@@ -19,9 +19,14 @@ namespace User.Gateway.Controllers
             return StatusCode(code, error);
         }
 
-        protected ObjectResult HttpResponse(Error data)
+        protected ObjectResult HttpResponse(ErrorDto data)
         {
-            return data.Status > 1000 ? StatusCode(400, data)  :  StatusCode(data.Status, data);
+            return data.Status > 1000 ? StatusCode(400, data) : StatusCode(data.Status, data);
+        }
+
+        protected ObjectResult HttpResponse(ResponseDataDto data)
+        {
+            return data.Status > 1000 ? StatusCode(400, data) : StatusCode(data.Status, data);
         }
     }
 }

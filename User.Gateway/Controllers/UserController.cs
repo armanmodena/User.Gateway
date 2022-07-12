@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using User.Gateway.DTO.User;
 using User.Gateway.Services.Interfaces;
 
 namespace User.Gateway.Controllers
@@ -53,6 +54,60 @@ namespace User.Gateway.Controllers
                         return HttpResponse(err);
 
                     return Ok(result);
+                }
+                catch (Exception ex)
+                {
+                    return ErrorResponse(ex);
+                }
+            }
+            return BadRequest();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Post([FromBody] FormUserDto user)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var result = await UserService.Insert(user);
+                    return HttpResponse(result);
+                }
+                catch (Exception ex)
+                {
+                    return ErrorResponse(ex);
+                }
+            }
+            return BadRequest();
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Put(int id, [FromBody] FormUserDto user)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var result = await UserService.Update(id, user);
+                    return HttpResponse(result);
+                }
+                catch (Exception ex)
+                {
+                    return ErrorResponse(ex);
+                }
+            }
+            return BadRequest();
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var result = await UserService.Delete(id);
+                    return HttpResponse(result);
                 }
                 catch (Exception ex)
                 {

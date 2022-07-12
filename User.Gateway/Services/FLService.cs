@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Flurl.Http;
 using Flurl.Http.Configuration;
+using Flurl.Util;
 using Microsoft.Extensions.Configuration;
 using User.Gateway.Services.Interfaces;
 
@@ -22,8 +25,25 @@ namespace User.Gateway.Services
         public IFlurlRequest Request(string path)
         {
             return UrlClient.Request(path)
-                            .WithHeader("Security-Code", "secret")
+                            .AllowHttpStatus("4xx")
+                            .WithHeader("Security-Code", Config["UserService:SecurityCode"])
                             .WithTimeout(TimeSpan.FromMinutes(3));
+        }
+
+        public string[] FormErrors(object formErrors)
+        {
+            var errors = formErrors.ToKeyValuePairs().Select(kv => new { kv.Key, kv.Value });
+
+            List<string> newErrors = new List<string>();
+            foreach (var error in errors)
+            {
+                var newValue = error.Value.ToKeyValuePairs().Select(kv => kv.Key);
+                foreach (var kv in newValue)
+                {
+                    newErrors.Add(kv);
+                }
+            }
+            return newErrors.ToArray();
         }
     }
 }

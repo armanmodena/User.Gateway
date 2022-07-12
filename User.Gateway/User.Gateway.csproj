@@ -18,6 +18,10 @@
   <ItemGroup>
     <Folder Include="Extensions\AsDtos\" />
     <Folder Include="Exceptions\" />
+    <Folder Include="Models\" />
+    <Folder Include="DBCOntext\" />
+    <Folder Include="Responses\" />
+    <Folder Include="Repositories\Interfaces\" />
     <Folder Include="Resources\" />
   </ItemGroup>
 

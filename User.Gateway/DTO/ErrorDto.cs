@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-namespace User.Gateway.DTO.Error
+namespace User.Gateway.DTO
 {
     [Serializable]
-    public class Error
+    public class ErrorDto
     {
         public int Status { get; set; }
 
@@ -13,7 +12,6 @@ namespace User.Gateway.DTO.Error
         public string Message { get; set; }
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public object Data { get; set; }
-
+        public object Errors { get; set; }
     }
 }
