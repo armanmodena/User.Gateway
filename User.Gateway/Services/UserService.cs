@@ -79,6 +79,20 @@ namespace User.Gateway.Services
             });
         }
 
+        public async Task<(UserModenaDto, ErrorDto)> GetModenaUser(string username, string password)
+        {
+            var result = await FLService.IdentityRequest($"user/validate").PostJsonAsync(new
+            {
+                username = username,
+                password = password
+            }).ReceiveJson<FLResponseModenaIdentity<UserModenaDto>>();
+            return result.Status == 200 ? (result.User, null) : (null, new ErrorDto()
+            {
+                Status = result.Status,
+                Message = result.Message
+            });
+        }
+
         public async Task<ResponseDataDto> Insert(FormUserDto user)
         {
             var result = await FLService.Request("user").PostJsonAsync(user).ReceiveJson<FLResponseDto<UserDto>>();

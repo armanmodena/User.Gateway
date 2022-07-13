@@ -13,6 +13,7 @@ namespace User.Gateway.Services
     {
         public readonly IConfiguration Config;
         protected readonly IFlurlClient UrlClient;
+        protected readonly IFlurlClient IdentityClient;
 
         public FLService(
             IConfiguration config,
@@ -20,6 +21,15 @@ namespace User.Gateway.Services
         {
             Config = config;
             UrlClient = clientFactory.Get(Config["UserService:Url"]);
+            IdentityClient = clientFactory.Get(Config["IdentityService:Url"]);
+        }
+
+        public IFlurlRequest IdentityRequest(string path)
+        {
+            return IdentityClient.Request(path)
+                            .AllowHttpStatus("4xx")
+                            .WithHeader("Security-Code", Config["IdentityService:SecurityCode"])
+                            .WithTimeout(TimeSpan.FromMinutes(3));
         }
 
         public IFlurlRequest Request(string path)

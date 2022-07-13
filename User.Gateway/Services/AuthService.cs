@@ -48,8 +48,16 @@ namespace User.Gateway.Services
             if (userError != null) 
                 return (null, userError);  
 
-            if (!user.Password.Equals(Hash.EncryptSHA2(authLogin.Password))) 
-                return (null, ErrorUtil.PasswordInvalid);
+            if(authLogin.Username.Contains("@modena.com"))
+            {
+                var (userModena, userModenaError) = await UserService.GetModenaUser(authLogin.Username, authLogin.Password);
+                if(userModenaError != null)
+                    return (null, ErrorUtil.PasswordInvalid);
+            } else
+            {
+                if (!user.Password.Equals(Hash.EncryptSHA2(authLogin.Password)))
+                    return (null, ErrorUtil.PasswordInvalid);
+            }
 
             var userToken = await GenerateUserToken(user);
             var (accessToken, accessTokenErr) = await GenerateAccessToken(user, userToken);
