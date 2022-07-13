@@ -21,14 +21,36 @@ namespace User.Gateway.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery] string select = "*", [FromQuery] string search = null, [FromQuery] string filterAnd = null, [FromQuery] string filterOr = null,
-            [FromQuery] string filterOut = null, [FromQuery] string order = "id", [FromQuery] string direction = "asc", [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+        public async Task<IActionResult> GetAll([FromQuery] string select, [FromQuery] string search, [FromQuery] string filterAnd, [FromQuery] string filterOr,
+            [FromQuery] string filterOut, [FromQuery] string order = "id", [FromQuery] string direction = "asc", [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
                     var (result, err) = await UserService.GetAll(select, search, filterAnd, filterOr, filterOut, order, direction, page, pageSize);
+                    if (err != null)
+                        return HttpResponse(err);
+
+                    return Ok(result);
+                }
+                catch (Exception ex)
+                {
+                    return ErrorResponse(ex);
+                }
+            }
+            return BadRequest();
+        }
+
+        [HttpGet("with-token")]
+        public async Task<IActionResult> GetAllWithToken([FromQuery] string select, [FromQuery] string search, [FromQuery] string filterAnd, [FromQuery] string filterOr,
+            [FromQuery] string filterOut, [FromQuery] string order = "id", [FromQuery] string direction = "asc", [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var (result, err) = await UserService.GetAllWithToken(select, search, filterAnd, filterOr, filterOut, order, direction, page, pageSize);
                     if (err != null)
                         return HttpResponse(err);
 

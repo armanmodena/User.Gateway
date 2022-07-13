@@ -37,6 +37,28 @@ namespace User.Gateway.Services
             });
         }
 
+        public async Task<(PageResultDto<UserWithTokenDto>, ErrorDto)> GetAllWithToken(string select, string search, string filterAnd, string filterOr, string filterOut,
+            string orderBy, string direction, int page, int pageSize)
+        {
+            var result = await FLService.Request("user/with-token").SetQueryParams(new
+            {
+                select = select,
+                search = search,
+                filterAnd = filterAnd,
+                filterOr = filterOr,
+                filterOut = filterOut,
+                orderBy = orderBy,
+                direction = direction,
+                page = page,
+                pageSize = pageSize,
+            }).GetAsync().ReceiveJson<FLResponseDto<PageResultDto<UserWithTokenDto>>>();
+            return result.Status == 200 ? (result.Data, null) : (null, new ErrorDto()
+            {
+                Status = result.Status,
+                Message = result.Message
+            });
+        }
+
         public async Task<(UserDto, ErrorDto)> Get(int id)
         {
             var result = await FLService.Request($"user/{id}").GetAsync().ReceiveJson<FLResponseDto<UserDto>>();
