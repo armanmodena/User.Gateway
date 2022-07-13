@@ -19,14 +19,14 @@ namespace User.Gateway.Controllers
             return StatusCode(code, error);
         }
 
-        protected ObjectResult HttpResponse(ErrorDto data)
+        protected ObjectResult HttpResponse(ErrorDto data, int code = 400)
         {
-            return data.Status > 1000 ? StatusCode(400, data) : StatusCode(data.Status, data);
+            return data.Status > 1000 ? StatusCode(code, data) : StatusCode(data.Status, data);
         }
 
-        protected ObjectResult HttpResponse(ResponseDataDto data)
+        protected ObjectResult HttpResponse(ResponseDataDto data, int code = 400)
         {
-            return data.Status > 1000 ? StatusCode(400, data) : StatusCode(data.Status, data);
+            return data.Status > 1000 ? StatusCode(code, data) : StatusCode(data.Status, data);
         }
     }
 }

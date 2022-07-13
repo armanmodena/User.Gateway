@@ -11,7 +11,7 @@ namespace User.Gateway.Extensions
         {
             services.AddSingleton<IFlurlClientFactory, PerBaseUrlFlurlClientFactory>();
             services.AddTransient<IFLService, FLService>();
-            services.AddTransient<IAuthService, AuthService>();
+            services.AddTransient<IAuthService, AuthServiceV2>();
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IUserTokenService, UserTokenService>();
 

@@ -57,11 +57,11 @@ namespace User.Gateway.Controllers{
                 {
                     string accessToken = httpContextAccessor.HttpContext.Items[ClaimUtil.ACCESS_TOKEN].ToString();
                     if (string.IsNullOrEmpty(accessToken))
-                        return HttpResponse(ErrorUtil.TokenNotFound);
+                        return HttpResponse(ErrorUtil.TokenNotFound, 401);
 
                     var (result, err) = await AuthService.GetRefreshToken(accessToken, refresh_token);
                     if (err != null)
-                        return HttpResponse(err);
+                        return HttpResponse(err, 401);
 
                     return Ok(result);
                 }
