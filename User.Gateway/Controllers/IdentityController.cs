@@ -11,8 +11,8 @@ using User.Gateway.Utils;
 namespace User.Gateway.Controllers{
 
     [ApiController]
-    [Route("identity")]
-
+    [ApiVersion("1.0")]
+    [Route("api/v{v:apiVersion}/auth")]
     public class IdentityController : BaseController
     {
         private readonly IAuthService AuthService;

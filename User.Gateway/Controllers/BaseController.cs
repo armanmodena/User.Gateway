@@ -4,6 +4,7 @@ using User.Gateway.DTO;
 
 namespace User.Gateway.Controllers
 {
+    [ApiVersion("1.0")]
     public class BaseController : Controller
     {
         protected ObjectResult ErrorResponse(Exception ex, int code = 500)

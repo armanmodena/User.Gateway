@@ -2,12 +2,23 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <NoWarn>1701;1702;1591</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <NoWarn>1701;1702;1591</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Flurl" Version="3.0.6" />
     <PackageReference Include="Flurl.Http" Version="3.2.4" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.11" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="5.0.0" />
     <PackageReference Include="StackExchange.Redis" Version="2.6.48" />
     <PackageReference Include="StackExchange.Redis.Extensions.AspNetCore" Version="8.0.5" />
     <PackageReference Include="StackExchange.Redis.Extensions.System.Text.Json" Version="8.0.5" />
@@ -20,9 +31,9 @@
     <Folder Include="Exceptions\" />
     <Folder Include="Models\" />
     <Folder Include="DBCOntext\" />
-    <Folder Include="Responses\" />
     <Folder Include="Repositories\Interfaces\" />
     <Folder Include="Resources\" />
+    <Folder Include="Responses\Images\" />
   </ItemGroup>
 
 </Project>

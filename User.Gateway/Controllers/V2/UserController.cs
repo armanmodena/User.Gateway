@@ -5,11 +5,11 @@ using Microsoft.AspNetCore.Mvc;
 using User.Gateway.DTO.User;
 using User.Gateway.Services.Interfaces;
 
-namespace User.Gateway.Controllers
+namespace User.Gateway.Controllers.V2
 {
     [ApiController]
     [Authorize]
-    [ApiVersion("1.0")]
+    [ApiVersion("2.0")]
     [Route("api/v{v:apiVersion}/user")]
     public class UserController : BaseController
     {
@@ -103,7 +103,6 @@ namespace User.Gateway.Controllers
             }
             return BadRequest();
         }
-
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(int id, [FromBody] FormUserDto user)

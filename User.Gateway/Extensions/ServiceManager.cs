@@ -14,6 +14,7 @@ namespace User.Gateway.Extensions
             services.AddTransient<IAuthService, AuthServiceV2>();
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IUserTokenService, UserTokenService>();
+            services.AddTransient<IFileUploadService, FileUploadService>();
 
             return services;
         }
