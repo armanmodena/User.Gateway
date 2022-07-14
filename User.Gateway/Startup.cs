@@ -15,6 +15,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using User.Gateway.Configure;
 using User.Gateway.Extensions;
 using User.Gateway.Utils;
 

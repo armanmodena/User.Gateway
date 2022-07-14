@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace User.Gateway.Extensions
+namespace User.Gateway.Configure
 {
     public class SwaggerConfigureOptions : IConfigureOptions<SwaggerGenOptions>
     {
