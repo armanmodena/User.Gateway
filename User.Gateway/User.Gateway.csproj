@@ -33,7 +33,8 @@
     <Folder Include="DBCOntext\" />
     <Folder Include="Repositories\Interfaces\" />
     <Folder Include="Resources\" />
-    <Folder Include="Responses\Images\" />
+    <Folder Include="Resources\Images\" />
+    <Folder Include="Responses\" />
   </ItemGroup>
 
 </Project>

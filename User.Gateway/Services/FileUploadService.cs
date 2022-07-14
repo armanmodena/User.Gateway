@@ -39,7 +39,7 @@ namespace User.Gateway.Services
 
             var file = Files[index];
 
-            if (file.Length > 0)
+            if (file != null && file.Length > 0)
             {
                 var fileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim('"');
                 renameFile = Convert.ToString(Guid.NewGuid()) + "." + fileName.Split('.').Last();
