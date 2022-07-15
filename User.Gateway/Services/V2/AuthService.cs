@@ -14,9 +14,9 @@ using User.Gateway.DTO.User;
 using User.Gateway.Services.Interfaces;
 using User.Gateway.Utils;
 
-namespace User.Gateway.Services
+namespace User.Gateway.Services.V2
 {
-    public class AuthServiceV2 : IAuthService
+    public class AuthService : IAuthService
     {
         public readonly ConnectionMultiplexer Redis;
         public readonly IConfiguration Configs;
@@ -26,7 +26,7 @@ namespace User.Gateway.Services
         private readonly IUserTokenService UserTokenService;
 
 
-        public AuthServiceV2(
+        public AuthService(
            IUserService userService,
            IUserTokenService userTokenService,
            IOptions<JWTDto> config,
@@ -85,7 +85,7 @@ namespace User.Gateway.Services
         private UserTokenDto GenerateUserToken(UserDto user)
         {
             int expiredTime = JWTConfig.RefreshExpiryDuration;
-         
+
             var expiredOn = DateTime.Now.AddMinutes(expiredTime);
             var refresh = Hash.EncryptSHA2($"id:${user.Id}, expired: ${expiredOn}");
 
@@ -139,7 +139,7 @@ namespace User.Gateway.Services
 
             if (!string.IsNullOrEmpty(userId))
             {
-                var id = Int32.Parse(userId);
+                var id = int.Parse(userId);
 
                 var (user, userError) = await UserService.Get(id);
                 if (userError != null)
