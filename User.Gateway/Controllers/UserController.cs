@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using User.Gateway.DTO.User;
 using User.Gateway.Services.Interfaces;
+using User.Gateway.Utils;
 
 namespace User.Gateway.Controllers
 {
@@ -15,10 +16,14 @@ namespace User.Gateway.Controllers
     {
         public readonly IUserService UserService;
 
+        public readonly IExportFileService ExportFileService;
+
         public UserController(
-            IUserService userService)
+            IUserService userService, 
+            IExportFileService exportFileService)
         {
             UserService = userService;
+            ExportFileService = exportFileService;
         }
 
         [HttpGet]
@@ -132,6 +137,52 @@ namespace User.Gateway.Controllers
                 {
                     var result = await UserService.Delete(id);
                     return HttpResponse(result);
+                }
+                catch (Exception ex)
+                {
+                    return ErrorResponse(ex);
+                }
+            }
+            return BadRequest();
+        }
+
+        [AllowAnonymous]
+        [HttpGet("export-csv")]
+        public async Task<IActionResult> ExportToCSV()
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var (result, err) = await UserService.GetAll(null, null, null, null, null, "id", "asc", 1, 1000000);
+                    if (err != null)
+                        return HttpResponse(err);
+
+                    string[] fields = { "Id", "Name", "Username" };
+                    return File(ExportFileService.ExportCSV<UserDto>(result.Data, fields), ExportUtil.CSVType, "user.csv");
+                }
+                catch (Exception ex)
+                {
+                    return ErrorResponse(ex);
+                }
+            }
+            return BadRequest();
+        }
+
+        [AllowAnonymous]
+        [HttpGet("with-token/export-excel")]
+        public async Task<IActionResult> ExportToExcel()
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var (result, err) = await UserService.GetAllWithToken(null, null, null, null, null, "id", "asc", 1, 1000000);
+                    if (err != null)
+                        return HttpResponse(err);
+
+                    string[] fields = { "Id", "Name", "Username", "RefreshToken" };
+                    return File(ExportFileService.ExportExcel<UserWithTokenDto>(result.Data, fields), ExportUtil.ExcelType, "users.xlsx");
                 }
                 catch (Exception ex)
                 {
