@@ -18,9 +18,10 @@ namespace User.Gateway.DTO.User
 
         public DateTime CreatedAt { get; set; }
 
+        #nullable enable
         public DateTime? UpdatedAt { get; set; }
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public string? ImageName { get; set; }
+        public string ImageName { get; set; }
     }
 }

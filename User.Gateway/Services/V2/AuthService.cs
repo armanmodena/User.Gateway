@@ -60,7 +60,7 @@ namespace User.Gateway.Services.V2
                     return (null, ErrorUtil.PasswordInvalid);
             }
 
-            var userToken = GenerateUserToken(user);
+            var userToken = await GenerateUserToken(user);
             var (accessToken, accessTokenErr) = await GenerateAccessToken(user, userToken.RefreshToken);
 
             if (accessTokenErr != null)
@@ -82,21 +82,35 @@ namespace User.Gateway.Services.V2
             return (result, null);
         }
 
-        private UserTokenDto GenerateUserToken(UserDto user)
+        private async Task<UserTokenDto> GenerateUserToken(UserDto user)
         {
             int expiredTime = JWTConfig.RefreshExpiryDuration;
+
+            var (userToken, tokenError) = await UserTokenService.GetByUserId(user.Id);
 
             var expiredOn = DateTime.Now.AddMinutes(expiredTime);
             var refresh = Hash.EncryptSHA2($"id:${user.Id}, expired: ${expiredOn}");
 
-            var userToken = new UserTokenDto();
-            userToken.Id = user.Id;
-            userToken.UserId = user.Id;
-            userToken.RefreshToken = refresh.Replace("=", "");
-            userToken.CreatedAt = DateTime.Now;
-            userToken.ExpiredAt = expiredOn;
+            if(tokenError != null)
+            {
+                userToken = new UserTokenDto();
+                userToken.UserId = user.Id;
+                userToken.RefreshToken = refresh.Replace("=", "");
+                userToken.CreatedAt = DateTime.Now;
+                userToken.ExpiredAt = expiredOn;
+                var (newToken, newTokenError) = await UserTokenService.Insert(userToken);
 
+                userToken.Id = newToken.Id;
+            } else
+            {
+                userToken.RefreshToken = refresh.Replace("=", "");
+                userToken.CreatedAt = DateTime.Now;
+                userToken.ExpiredAt = expiredOn;
+
+                await UserTokenService.Update(user.Id, userToken);
+            }
             return userToken;
+
         }
 
         private async Task<(string, ErrorDto)> GenerateAccessToken(UserDto user, string refreshToken)
@@ -127,7 +141,7 @@ namespace User.Gateway.Services.V2
             var jwtToken = jwtTokenHandler.CreateToken(tokenDescriptor);
             var accessToken = jwtTokenHandler.WriteToken(jwtToken);
 
-            int expiryDuration = JWTConfig.ExpiryDuration;
+            int expiryDuration = JWTConfig.RefreshExpiryDuration;
             await Redis.GetDatabase().StringSetAsync($"userapp_{user.Username.ToLower()}_refreshtoken", refreshToken, TimeSpan.FromMinutes(expiryDuration));
 
             return (accessToken, null);
@@ -145,7 +159,7 @@ namespace User.Gateway.Services.V2
                 if (userError != null)
                     return (null, userError);
 
-                var userToken = GenerateUserToken(user);
+                var userToken = await GenerateUserToken(user);
 
                 var currentAccessToken = Redis.GetDatabase().StringGet($"userapp_{user.Username.ToLower()}_refreshtoken");
                 if (string.IsNullOrEmpty(currentAccessToken))

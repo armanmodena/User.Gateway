@@ -29,5 +29,10 @@ namespace User.Gateway.Controllers
         {
             return data.Status > 1000 ? StatusCode(code, data) : StatusCode(data.Status, data);
         }
+
+        protected ObjectResult HttpResponse(string message, int code = 400)
+        {
+            return StatusCode(code, message);
+        }
     }
 }

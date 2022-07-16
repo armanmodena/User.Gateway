@@ -18,6 +18,7 @@ namespace User.Gateway.DTO.User
 
         public DateTime CreatedAt { get; set; }
 
+        #nullable enable
         public DateTime? UpdatedAt { get; set; }
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]

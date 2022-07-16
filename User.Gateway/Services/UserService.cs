@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Flurl.Http;
 using User.Gateway.DTO;
 using User.Gateway.DTO.User;
@@ -96,6 +97,18 @@ namespace User.Gateway.Services
         public async Task<ResponseDataDto> Insert(FormUserDto user)
         {
             var result = await FLService.Request("user").PostJsonAsync(user).ReceiveJson<FLResponseDto<UserDto>>();
+            return new ResponseDataDto()
+            {
+                Status = result.Status,
+                Message = result.Message,
+                Data = result.Data,
+                Errors = result.Errors != null ? FLService.FormErrors(result.Errors) : null
+            };
+        }
+
+        public async Task<ResponseDataDto> InsertImport(List<UserDto> users)
+        {
+            var result = await FLService.Request("user/import").PostJsonAsync(users).ReceiveJson<FLResponseDto<UserDto>>();
             return new ResponseDataDto()
             {
                 Status = result.Status,

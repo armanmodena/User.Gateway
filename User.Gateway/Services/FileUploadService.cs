@@ -33,6 +33,28 @@ namespace User.Gateway.Services
             }
         }
 
+        public (bool, string) deleteFile(string fileName)
+        {
+            string path = "Resources//Files//" + fileName;
+            if (File.Exists(path))
+            {
+                try
+                {
+                    File.Delete(path);
+                }
+                catch (Exception e)
+                {
+                    return (false, "The deletion failed: " + e.Message);
+                }
+
+                return (true, null);
+            }
+            else
+            {
+                return (false, "File doesn't exists!");
+            }
+        }
+
         public string genImageName(IFormFileCollection Files, string index)
         {
             string renameFile = null;
@@ -52,6 +74,21 @@ namespace User.Gateway.Services
         {
             var file = Files[index];
             var folderName = Path.Combine("Resources", "Images");
+            var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
+            var fullPath = Path.Combine(pathToSave, fileName);
+            var dbPath = Path.Combine(folderName, fileName);
+
+            using (var stream = new FileStream(fullPath, FileMode.Create))
+            {
+                file.CopyTo(stream);
+                return dbPath;
+            }
+        }
+
+        public string saveFile(IFormFileCollection Files, string index, string fileName)
+        {
+            var file = Files[index];
+            var folderName = Path.Combine("Resources", "Files");
             var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
             var fullPath = Path.Combine(pathToSave, fileName);
             var dbPath = Path.Combine(folderName, fileName);

@@ -45,5 +45,15 @@ namespace User.Gateway.Services
                 Message = result.Message
             });
         }
+
+        public async Task<(UserTokenDto, ErrorDto)> Update(int user_id, UserTokenDto userToken)
+        {
+            var result = await FLService.Request($"user/{user_id}/token").PutJsonAsync(userToken).ReceiveJson<FLResponseDto<UserTokenDto>>();
+            return result.Status == 200 ? (result.Data, null) : (null, new ErrorDto()
+            {
+                Status = result.Status,
+                Message = result.Message
+            });
+        }
     }
 }

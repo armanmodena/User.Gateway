@@ -12,5 +12,6 @@ namespace User.Gateway.Services.Interfaces
 
         Task<(UserTokenDto, ErrorDto)> Insert(UserTokenDto userToken);
 
+        Task<(UserTokenDto, ErrorDto)> Update(int user_id, UserTokenDto userToken);
     }
 }

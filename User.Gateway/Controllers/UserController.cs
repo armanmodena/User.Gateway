@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using User.Gateway.DTO.User;
+using User.Gateway.Extensions;
 using User.Gateway.Services.Interfaces;
 using User.Gateway.Utils;
 
@@ -16,14 +17,17 @@ namespace User.Gateway.Controllers
     {
         public readonly IUserService UserService;
 
-        public readonly IExportFileService ExportFileService;
+        public readonly EportImport<UserDto> EportImport;
+
+        public readonly IFileUploadService FileUploadService;
 
         public UserController(
-            IUserService userService, 
-            IExportFileService exportFileService)
+            IUserService userService,
+            IFileUploadService fileUploadService)
         {
             UserService = userService;
-            ExportFileService = exportFileService;
+            EportImport = new EportImport<UserDto>();
+            FileUploadService = fileUploadService;
         }
 
         [HttpGet]
@@ -159,7 +163,7 @@ namespace User.Gateway.Controllers
                         return HttpResponse(err);
 
                     string[] fields = { "Id", "Name", "Username" };
-                    return File(ExportFileService.ExportCSV<UserDto>(result.Data, fields), ExportUtil.CSVType, "user.csv");
+                    return File(EportImport.ExportCSV<UserDto>(result.Data, fields), ExportUtil.CSVType, "user.csv");
                 }
                 catch (Exception ex)
                 {
@@ -182,7 +186,7 @@ namespace User.Gateway.Controllers
                         return HttpResponse(err);
 
                     string[] fields = { "Id", "Name", "Username", "RefreshToken" };
-                    return File(ExportFileService.ExportExcel<UserWithTokenDto>(result.Data, fields), ExportUtil.ExcelType, "users.xlsx");
+                    return File(EportImport.ExportExcel<UserWithTokenDto>(result.Data, fields), ExportUtil.ExcelType, "users.xlsx");
                 }
                 catch (Exception ex)
                 {
@@ -190,6 +194,40 @@ namespace User.Gateway.Controllers
                 }
             }
             return BadRequest();
+        }
+
+        [HttpPost("import/excel")]
+        public async Task<IActionResult> ImportExcel()
+        {
+            var fileName = FileUploadService.genImageName(Request.Form.Files, "file");
+
+            if (fileName != null)
+            {
+                try
+                {
+                    var filePath = FileUploadService.saveFile(Request.Form.Files, "file", fileName);
+                    string[] columns = { "Name", "Username", "Password", "CreatedAt", "UpdatedAt" };
+
+                    var (users, err) = EportImport.ImportExcel(filePath, columns);
+
+                    if (err != null)
+                        return HttpResponse(err);
+
+                    var result = await UserService.InsertImport(users);
+
+                    if (result != null)
+                    {
+                        FileUploadService.deleteFile(fileName);
+                    }
+
+                    return HttpResponse(result);
+                }
+                catch (Exception ex)
+                {
+                    return ErrorResponse(ex);
+                }
+            }
+            return HttpResponse("File not found", 404);
         }
     }
 }

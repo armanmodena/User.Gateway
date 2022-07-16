@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using User.Gateway.DTO;
 using User.Gateway.DTO.User;
 
@@ -15,6 +16,8 @@ namespace User.Gateway.Services.Interfaces
         Task<(UserModenaDto, ErrorDto)> GetModenaUser(string username, string password);
 
         Task<(UserDto, ErrorDto)> GetByUsername(string username);
+
+        Task<ResponseDataDto> InsertImport(List<UserDto> users);
 
         Task<ResponseDataDto> Insert(FormUserDto user);
 

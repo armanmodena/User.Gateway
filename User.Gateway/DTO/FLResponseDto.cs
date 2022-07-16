@@ -8,6 +8,7 @@
 
         public T Data { get; set; }
 
+        #nullable enable
         public object? Errors { get; set; }
     }
 }
